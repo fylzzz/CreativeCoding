@@ -20,10 +20,10 @@ function keyPressed() {
     switch(key) {
     case 'a':
         //console.log(key);
-        rotateZ(-QUARTER_PI);
+        rotateZ(-frameCount * 0.01);
         break;
     case 'd':
-        rotateZ(QUARTER_PI);
+        rotateZ(frameCount * 0.01);
         break;
     default:
         break;
