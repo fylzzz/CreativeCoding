@@ -1,22 +1,18 @@
 let object;
 
-function preload() {
-    loadModel('/assets/cube.obj', true, handleModel, handleError);
-}
-
 function setup() {
+    loadModel('/week1/assets/cube.obj', true, handleModel, handleError);
     createCanvas(800, 600, WEBGL);
 }
 
 function draw() {
     if(!object) {
-        console.error("Unable to load object");
-        
+        console.error("Unable to load object");      
         return;
     }
 
     background(220);
-
+    orbitControl(3, 3, 3);
     model(object);
 }
 
