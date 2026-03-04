@@ -1,13 +1,7 @@
 let object;
 
 function preload() {
-    //object = loadModel('/assets/Lightning.obj', true, handleModel, handleError);
-    fetch('/assets/Lightning.obj')
-        .then(r => r.text())
-        .then(text => {
-            console.log('File size:', text.length, 'chars');
-            console.log('First 200 chars:', text.substring(0, 200));
-        });
+    loadModel('/assets/cube.obj', true, handleModel, handleError);
 }
 
 function setup() {
@@ -15,7 +9,11 @@ function setup() {
 }
 
 function draw() {
-    if(!object) return;
+    if(!object) {
+        console.error("Unable to load object");
+        
+        return;
+    }
 
     background(220);
 
