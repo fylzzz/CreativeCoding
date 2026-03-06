@@ -11,6 +11,19 @@ function draw() {
         return;
     }
 
+    while(keyIsPressed == true) {
+        switch(key) {
+            case 'a':
+                rotateY(-frameCount * 0.01);
+                break;
+            case 'd':
+                rotateY(frameCount * 0.01);
+                 break;
+            default:
+                break;
+        }
+    }
+
     background(220);
     //orbitControl(3, 3, 3);
     model(object);
@@ -20,10 +33,10 @@ function keyPressed() {
     switch(key) {
     case 'a':
         //console.log(key);
-        rotateZ(-frameCount * 0.01);
+        rotateY(-frameCount * 0.01);
         break;
     case 'd':
-        rotateZ(frameCount * 0.01);
+        rotateY(frameCount * 0.01);
         break;
     default:
         break;
