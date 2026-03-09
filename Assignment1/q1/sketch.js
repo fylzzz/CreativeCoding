@@ -6,27 +6,21 @@ function setup() {
 function draw() {
     background(220);
 
+    let d = 80;
+
     line(mouseX, 0, mouseX, windowHeight);
     line(0, mouseY, windowWidth, mouseY);
 
-    let d = windowWidth/30;
-
-    for(let i = 0; i < 4; i++)   {
-        switch(i)   {
-            case 0:
-            case 2:
-                fill(255, 0, 0);
-                circle(mouseX, mouseY, d);
-                break;
-            case 1:
-            case 3:
-                fill(255, 255, 255);
-                circle(mouseX, mouseY, d);
-                break;
-        default:
-            break;
+    for(let i = 0; i < 4; i++) {
+        if(i % 2 == 0) {
+            fill(255,0,0);
         }
-        //console.log("draw circle " + i + " of size " + d);
+        else {
+            fill(255)
+        }
+        circle(mouseX, mouseY, d);
         d -= 20;
+        //console.log("draw circle " + i + " of size " + d);
+        
     }
 }
