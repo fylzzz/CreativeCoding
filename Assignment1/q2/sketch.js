@@ -7,7 +7,7 @@ function setup() {
 function draw() {
     background(255);
 
-    circles.forEach(c => c.show());
+    circles.forEach(c => c.render());
 }
 
 function mouseClicked() {
@@ -22,7 +22,7 @@ class Circle {
         this.c = color(random(255), random(255), random(255));
     }
 
-    show() {
+    render() {
         fill(this.c);
         circle(this.x, this.y, this.d);
     }
