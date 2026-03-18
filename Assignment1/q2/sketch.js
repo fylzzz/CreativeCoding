@@ -11,7 +11,7 @@ function draw() {
 }
 
 function mouseClicked() {
-    circles.push(new Circle(mouseX, mouseY))
+    circles.push(new Circle(mouseX, mouseY));
 }
 
 class Circle {
