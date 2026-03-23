@@ -59,28 +59,33 @@ function comedyBar() {
     fill(255, 0, 0);
     rectMode(CORNERS);
     rect(padding+10, windowHeight-padding, padding+110, (windowHeight - padding - graphHeight/largest*comedy));
+    text("Comedy", padding+30, windowHeight-padding+15);
 }
 
 function actionBar() {
     fill(0, 255, 0);
     rectMode(CORNERS);
     rect(padding+120, windowHeight-padding, padding+220, (windowHeight - padding - graphHeight/largest*action));
+    text("Action", padding+140, windowHeight-padding+15);
 }
 
 function romanceBar() {
     fill(0, 0, 255);
     rectMode(CORNERS);
     rect(padding+230, windowHeight-padding, padding+330, (windowHeight - padding - graphHeight/largest*romance));
+    text("Romance", padding+250, windowHeight-padding+15);
 }
 
 function dramaBar() {
     fill(255, 255, 0);
     rectMode(CORNERS);
     rect(padding+340, windowHeight-padding, padding+440, (windowHeight - padding - graphHeight/largest*drama));
+    text("Drama", padding+360, windowHeight-padding+15);
 }
 
 function scifiBar() {
     fill(255, 0, 255);
     rectMode(CORNERS);
     rect(padding+450, windowHeight-padding, padding+550, (windowHeight - padding - graphHeight/largest*scifi));
+    text("Sci-Fi", padding+470, windowHeight-padding+15);
 }
