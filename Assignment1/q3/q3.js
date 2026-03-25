@@ -13,6 +13,7 @@ function setup() {
     padding = windowWidth/10;
     largest = max(comedy, action, romance, drama, scifi);
 
+    //find largest graph value divisble by 5
     while(largest % 5 != 0) {
         largest++;
     }
@@ -29,10 +30,12 @@ function draw() {
 function drawGraph() {
     graphHeight = windowHeight-padding*2;
 
+    //draw outer graph bars
     strokeWeight(5);
     line(padding, padding, padding, windowHeight-padding);
     line(padding, windowHeight-padding, windowWidth-padding, windowHeight-padding);
 
+    //draw y-axis labels
     strokeWeight(10);
     textAlign(LEFT, CENTER);
     text((largest/5*1), padding-20, padding + graphHeight/5*4);
@@ -41,6 +44,7 @@ function drawGraph() {
     text((largest/5*4), padding-20, padding + graphHeight/5*1);
     text((largest/5*5), padding-20, padding + graphHeight/5*0);
 
+    //draw horizontal lines
     strokeWeight(2);
     line(padding, padding + graphHeight/5*0, windowWidth-padding, padding + graphHeight/5*0);
     line(padding, padding + graphHeight/5*1, windowWidth-padding, padding + graphHeight/5*1);
@@ -48,6 +52,7 @@ function drawGraph() {
     line(padding, padding + graphHeight/5*3, windowWidth-padding, padding + graphHeight/5*3);
     line(padding, padding + graphHeight/5*4, windowWidth-padding, padding + graphHeight/5*4);
 
+    //draw bars
     comedyBar();
     actionBar();
     romanceBar();
