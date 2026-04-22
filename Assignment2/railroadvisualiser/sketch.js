@@ -10,22 +10,27 @@ function preload() {
 }
 
 function setup() {
-    createCanvas(800, 600);
+    createCanvas(windowHeight, windowHeight);
 
     loadStations();
 }
 
 function draw() {
     background(220);
+    image(mapImage, 0, 0, windowHeight, windowHeight);
+
+    stationArray.forEach(s => s.render());
+    stationArray.forEach(s => s.hover());
 }
 
 function loadStations() {
-    for (i = 0; i < mapData.features.length; i++) {
+    for (let i = 0; i < mapData.features.length; i++) {
         let feature = mapData.features[i];
         let longitude = feature.geometry.coordinates[0];
         let latitude = feature.geometry.coordinates[1];
         
-        if (152.946922527076 <= longitude <= 153.180247019681 && -27.6049449522395 <= latitude <= -27.3660874490119) {
+        if (longitude >= 152.946922527076 && longitude <= 153.180247019681 &&
+            latitude >= -27.6049449522395 && latitude <= -27.3660874490119) {
         let station = new Station(
             feature.properties.NAME,
             longitude,
@@ -44,5 +49,24 @@ class Station {
         this.x = x;
         this.y = y;
         this.status = status;
+        this.sx = 0;
+        this.sy = 0;
+    }
+
+    render() {
+        this.sx = map(this.x, 152.918755, 153.196618, 0, windowHeight);
+        this.sy = map(this.y, -27.358992, -27.605666, 0, windowHeight);
+        circle(this.sx, this.sy, 10);
+    }
+
+    hover() {
+        let d = dist(mouseX, mouseY, this.sx, this.sy)
+        if (d < 10) {
+            rect(mouseX + 10, mouseY + 10, 200, 100);
+            text("Name: " + this.name, mouseX + 10, mouseY + 10, 200, 100);
+            text("Longitude: " + this.x, mouseX + 10, mouseY + 25, 200, 100);
+            text("Latitude: " + this.y, mouseX + 10, mouseY + 40, 200, 100);
+            text("Satus: " + this.status, mouseX + 10, mouseY + 55, 200, 100);
+        }
     }
 }
