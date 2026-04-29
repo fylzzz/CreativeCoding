@@ -89,11 +89,31 @@ class Station {
     hover() {
         let d = dist(mouseX, mouseY, this.sx, this.sy)
         if (d < 10) {
-            rect(mouseX + 10, mouseY + 10, 200, 100);
-            text("Name: " + this.name, mouseX + 10, mouseY + 15, 200, 100);
-            text("Longitude: " + this.x, mouseX + 10, mouseY + 30, 200, 100);
-            text("Latitude: " + this.y, mouseX + 10, mouseY + 45, 200, 100);
-            text("Status: " + this.status, mouseX + 10, mouseY + 60, 200, 100);
+            if (this.sx > width/2 && this.sy > height/2) {
+                rect(mouseX - 210, mouseY - 110, 200, 100);
+                text("Name: " + this.name, mouseX - 210, mouseY - 105, 200, 100);
+                text("Longitude: " + this.x, mouseX - 210, mouseY - 90, 200, 100);
+                text("Latitude: " + this.y, mouseX - 210, mouseY - 75, 200, 100);
+                text("Status: " + this.status, mouseX - 210, mouseY - 60, 200, 100);
+            } else if (this.sx > width/2) {
+                rect(mouseX - 210, mouseY + 10, 200, 100);
+                text("Name: " + this.name, mouseX - 210, mouseY + 15, 200, 100);
+                text("Longitude: " + this.x, mouseX - 210, mouseY + 30, 200, 100);
+                text("Latitude: " + this.y, mouseX - 210, mouseY + 45, 200, 100);
+                text("Status: " + this.status, mouseX - 210, mouseY + 60, 200, 100);
+            } else if (this.sy > height/2) {
+                rect(mouseX + 10, mouseY - 110, 200, 100);
+                text("Name: " + this.name, mouseX + 10, mouseY - 105, 200, 100);
+                text("Longitude: " + this.x, mouseX + 10, mouseY - 90, 200, 100);
+                text("Latitude: " + this.y, mouseX + 10, mouseY - 75, 200, 100);
+                text("Status: " + this.status, mouseX + 10, mouseY - 60, 200, 100);
+            } else {
+                rect(mouseX + 10, mouseY + 10, 200, 100);
+                text("Name: " + this.name, mouseX + 10, mouseY + 15, 200, 100);
+                text("Longitude: " + this.x, mouseX + 10, mouseY + 30, 200, 100);
+                text("Latitude: " + this.y, mouseX + 10, mouseY + 45, 200, 100);
+                text("Status: " + this.status, mouseX + 10, mouseY + 60, 200, 100);
+            }
         }
     }
 }
