@@ -1,4 +1,5 @@
 let stationArray = [];
+let stationRouteData = [];
 let mapData;
 let mapImage;
 let routeData;
@@ -13,12 +14,17 @@ function setup() {
     createCanvas(windowHeight, windowHeight);
 
     loadStations();
+    stationRouteData = routeData.map(name => ({
+        stations: name.split(', '),
+        colour: color(random(255), random(255), random(255))
+    }));
 }
 
 function draw() {
     background(220);
     image(mapImage, 0, 0, windowHeight, windowHeight);
 
+    renderRoutes();
     stationArray.forEach(s => s.render());
     stationArray.forEach(s => s.hover());
 }
@@ -43,6 +49,27 @@ function loadStations() {
     }
 }
 
+function renderRoutes() {
+    strokeWeight(3);
+
+    for (let i = 0; i < stationRouteData.length; i++) {
+        let route = stationRouteData[i];
+        stroke(route.colour);
+        
+        for (let j = 0; j < route.stations.length; j++) {
+            let stationStart = stationArray.find(s => s.name === route.stations[j])
+            let stationEnd = stationArray.find(s => s.name === route.stations[j + 1])
+
+            if (stationStart && stationEnd) {
+                line(stationStart.sx, stationStart.sy, stationEnd.sx, stationEnd.sy);
+            }
+        }
+    }
+
+    stroke(0);
+    strokeWeight(1);
+}
+
 class Station {
     constructor(name, x, y, status) {
         this.name = name;
@@ -63,10 +90,10 @@ class Station {
         let d = dist(mouseX, mouseY, this.sx, this.sy)
         if (d < 10) {
             rect(mouseX + 10, mouseY + 10, 200, 100);
-            text("Name: " + this.name, mouseX + 10, mouseY + 10, 200, 100);
-            text("Longitude: " + this.x, mouseX + 10, mouseY + 25, 200, 100);
-            text("Latitude: " + this.y, mouseX + 10, mouseY + 40, 200, 100);
-            text("Satus: " + this.status, mouseX + 10, mouseY + 55, 200, 100);
+            text("Name: " + this.name, mouseX + 10, mouseY + 15, 200, 100);
+            text("Longitude: " + this.x, mouseX + 10, mouseY + 30, 200, 100);
+            text("Latitude: " + this.y, mouseX + 10, mouseY + 45, 200, 100);
+            text("Status: " + this.status, mouseX + 10, mouseY + 60, 200, 100);
         }
     }
 }
