@@ -4,6 +4,10 @@ let enemyObj = [];
 
 let sceneList = [];
 let currentScene;
+let finishScreenReady = false;
+
+let menuButton;
+let endButton;
 
 let shipSprite;
 
@@ -81,6 +85,7 @@ function draw() {
 
             if (missed >= 3) {
                 currentScene = sceneList[3];
+                finishScreenReady = false;
             }
 
             // -------------------
@@ -114,9 +119,20 @@ function draw() {
             text("Score: " + scoresheet.score, windowWidth/2, windowHeight/2 + 80);
             text("Time: " + scoresheet.time.toFixed(4), windowWidth/2, windowHeight/2 + 110);
 
-            let data = {month: month(), date: day(), score: score, time: (playTime/1000)}
-            saveJSON(data, 'scoresheet.json');
-            break;
+            if (!finishScreenReady) {
+                let data = { month: month(), date: day(), score: score, time: (playTime/1000) };
+                saveJSON(data, 'scoresheet.json');
+
+                endButton = createButton("Return to Menu");
+                endButton.position(windowWidth/2, windowHeight/3 + 60);
+                endButton.style('transform', 'translateX(-50%)');
+                endButton.mousePressed(() => {
+                    endButton.remove();
+                    currentScene = sceneList[0];
+                });
+
+                finishScreenReady = true;
+    }
     }
 }
 
