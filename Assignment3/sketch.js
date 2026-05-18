@@ -1,10 +1,16 @@
 let playerObj;
 let bulletObj = [];
+let enemyObj = [];
 
 let sceneList = [];
 let currentScene;
 
 let shipSprite;
+
+let lastSpawn = 0;
+const spawnTimer = 5000;
+
+let score = 0;
 
 function preload() {
     shipSprite = loadImage('assets/ship.png');
@@ -16,6 +22,7 @@ function setup() {
     sceneList = ["menu", "load", "main", "finish"];
     currentScene = sceneList[2];
     playerObj = new Player(windowWidth/2, windowHeight/1.2, 3);
+    enemyObj.push(new Enemy(windowWidth/2, 10, 1));
 }
 
 function draw() {
@@ -27,25 +34,76 @@ function draw() {
         case "load":
             break;
         case "main":
+            // -------------------
+            // Polling
+            // -------------------
             handleInput(playerObj);
+
+            // -------------------
+            // Update
+            // -------------------
+            if (millis() - lastSpawn >= spawnTimer) {
+                spawnEnemy();
+                lastSpawn = millis();
+            }
+
+            bulletObj = bulletObj.filter(b => {
+                if (b.y < -20) return false;
+
+                for (let i = enemyObj.length - 1; i >= 0; i--) {
+                    let e = enemyObj[i];
+                    if (dist(b.x, b.y, e.x, e.y) < 15) {
+                        e.health--;
+                        if (e.health <= 0) {
+                            e.sprite.remove();
+                            enemyObj.splice(i, 1);
+                            score += 500;
+                        }
+                        return false;
+                    }
+                }
+                return true;
+            });
+
+            enemyObj = enemyObj.filter(e => {
+                if (e.y > windowHeight + 20) {
+                    e.sprite.remove();
+                    return false;
+                }
+                return true;
+            });
+
+            // -------------------
+            // Render
+            // -------------------
             playerObj.render();
+            enemyObj.forEach(e => e.render());
             bulletObj.forEach(b => b.render());
+
+            fill(10);
+            rect(windowWidth/1.5, 0, (windowWidth-windowWidth/1.5), windowHeight);
+            fill(255);
+            textSize(52);
+            text("SCORE: " + score, windowWidth/1.5 + 50, 100, (windowWidth-windowWidth/1.5-50), 100);
+
             drawSprites();
+
             break;
         case "finish":
             break;
     }
 }
 
+function spawnEnemy() {
+    enemyObj.push(new Enemy(random(0, windowWidth/1.5), 0, 1));
+}
+
 function handleInput(player) {
-    console.log("handling");
     if (keyIsDown(65)) {
         player.x -= player.speed;
-        console.log("left");
     }
     if (keyIsDown(68)) {
         player.x += player.speed;
-        console.log("right");
     }
     if (mouseIsPressed && mouseButton == LEFT && millis() - player.lastShot > player.shootCooldown) {
         bulletObj.push(new Bullet(player.x, player.y - player.sprite.height));
@@ -93,10 +151,13 @@ class Enemy {
         this.y = y;
         this.health = health;
         this.speed = 3;
+
+        this.sprite = createSprite(x, y, 20, 20);
     }
 
     render() {
-        fill(255);
-        circle(this.x, this.y, 10);
+        this.y += this.speed;
+        this.sprite.position.x = this.x;
+        this.sprite.position.y = this.y;
     }
 }
