@@ -11,16 +11,19 @@ let lastSpawn = 0;
 const spawnTimer = 5000;
 
 let score = 0;
+let missed = 0;
+let playTime = 0;
 
 function preload() {
     shipSprite = loadImage('assets/ship.png');
+    scoresheet = loadJSON('assets/scoresheet.json');
 }
 
 function setup() {
     createCanvas(windowWidth, windowHeight);
 
     sceneList = ["menu", "load", "main", "finish"];
-    currentScene = sceneList[2];
+    currentScene = sceneList[3];
     playerObj = new Player(windowWidth/2, windowHeight/1.2, 3);
     enemyObj.push(new Enemy(windowWidth/2, 10, 1));
 }
@@ -47,6 +50,8 @@ function draw() {
                 lastSpawn = millis();
             }
 
+            playTime = millis();
+
             bulletObj = bulletObj.filter(b => {
                 if (b.y < -20) return false;
 
@@ -68,10 +73,15 @@ function draw() {
             enemyObj = enemyObj.filter(e => {
                 if (e.y > windowHeight + 20) {
                     e.sprite.remove();
+                    missed++;
                     return false;
                 }
                 return true;
             });
+
+            if (missed >= 3) {
+                currentScene = sceneList[3];
+            }
 
             // -------------------
             // Render
@@ -85,11 +95,27 @@ function draw() {
             fill(255);
             textSize(52);
             text("SCORE: " + score, windowWidth/1.5 + 50, 100, (windowWidth-windowWidth/1.5-50), 100);
+            text("TIME: " + (playTime/1000).toFixed(4), windowWidth/1.5 + 50, 200, (windowWidth-windowWidth/1.5-50), 100);
+            text("MISSED: " + missed, windowWidth/1.5 + 50, 300, (windowWidth-windowWidth/1.5-50), 100);
 
             drawSprites();
 
             break;
         case "finish":
+            background(10);
+            fill(255);
+            textAlign(CENTER, CENTER)
+            textSize(52);
+            text("Game Over", windowWidth/2, windowHeight/3);
+
+            text("Hi-Score:", windowWidth/2, windowHeight/2);
+            textSize(36);
+            text("Date: " + scoresheet.date + "/" + scoresheet.month, windowWidth/2, windowHeight/2 + 50);
+            text("Score: " + scoresheet.score, windowWidth/2, windowHeight/2 + 80);
+            text("Time: " + scoresheet.time.toFixed(4), windowWidth/2, windowHeight/2 + 110);
+
+            let data = {month: month(), date: day(), score: score, time: (playTime/1000)}
+            saveJSON(data, 'scoresheet.json');
             break;
     }
 }
