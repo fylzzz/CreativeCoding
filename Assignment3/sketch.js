@@ -10,6 +10,8 @@ let menuButton;
 let endButton;
 
 let shipSprite;
+let bgVideo;
+let videoStarted = false;
 
 let lastSpawn = 0;
 const spawnTimer = 5000;
@@ -26,8 +28,12 @@ function preload() {
 function setup() {
     createCanvas(windowWidth, windowHeight);
 
+    bgVideo = createVideo('assets/backgroundvideo.mp4');
+    bgVideo.hide();
+    bgVideo.volume(0);  
+
     sceneList = ["menu", "load", "main", "finish"];
-    currentScene = sceneList[3];
+    currentScene = sceneList[2];
     playerObj = new Player(windowWidth/2, windowHeight/1.2, 3);
     enemyObj.push(new Enemy(windowWidth/2, 10, 1));
 }
@@ -35,10 +41,24 @@ function setup() {
 function draw() {
     background(220);
 
+    if (!videoStarted) {
+        bgVideo.loop();
+        videoStarted = true;
+    }
+
     switch (currentScene) {
         case "menu":
             break;
         case "load":
+            let timer = 5000;
+            let startTime = millis();
+            while (millis() < startTime + timer) {
+                background(10);
+                fill(255);
+                textAlign(CENTER, CENTER);
+                text("Loading...", windowWidth/2, windowHeight/2);
+            }
+            currentScene = sceneList[2];
             break;
         case "main":
             // -------------------
@@ -91,6 +111,8 @@ function draw() {
             // -------------------
             // Render
             // -------------------
+            image(bgVideo, 0, 0, windowWidth, windowHeight);
+
             playerObj.render();
             enemyObj.forEach(e => e.render());
             bulletObj.forEach(b => b.render());
