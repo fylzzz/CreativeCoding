@@ -11,6 +11,9 @@ let menuButton;
 let endButton;
 
 let shipSprite;
+let astSprite1;
+let astSprite2;
+let astSprite3;
 let bgVideo;
 let videoStarted = false;
 
@@ -25,11 +28,15 @@ let gameStartTime = 0;
 
 function preload() {
     shipSprite = loadImage('assets/ship.png');
+    astSprite1 = loadImage('assets/asteroid1.png');
+    astSprite2 = loadImage('assets/asteroid2.png');
+    astSprite3 = loadImage('assets/asteroid3.png');
     scoresheet = loadJSON('assets/scoresheet.json');
 }
 
 function setup() {
     createCanvas(windowWidth, windowHeight);
+    noSmooth();
 
     bgVideo = createVideo('assets/backgroundvideo.mp4');
     bgVideo.hide();
@@ -37,8 +44,7 @@ function setup() {
 
     sceneList = ["menu", "load", "main", "finish"];
     currentScene = sceneList[0];
-    playerObj = new Player(windowWidth/2, windowHeight/1.2, 3);
-    enemyObj.push(new Enemy(windowWidth/2, 10, 1));
+    playerObj = new Player(windowWidth/2, windowHeight - 20, 3);
 }
 
 function draw() {
@@ -102,11 +108,11 @@ function draw() {
 
                 for (let i = enemyObj.length - 1; i >= 0; i--) {
                     let e = enemyObj[i];
-                    if (dist(b.x, b.y, e.x, e.y) < 15) {
+                    if (dist(b.x, b.y, e.x, e.y) < 40) {
                         e.health--;
                         if (e.health <= 0) {
-                            e.sprite.remove();
                             enemyObj.splice(i, 1);
+                            e.handleDeath();
                             score += 500;
                         }
                         return false;
@@ -193,7 +199,7 @@ function resetGame() {
 }
 
 function spawnEnemy() {
-    enemyObj.push(new Enemy(random(0, windowWidth/1.5), 0, 1));
+    enemyObj.push(new Enemy(random(0, windowWidth/1.5), 0, 1, floor(random(1, 4))));
 }
 
 function handleInput(player) {
@@ -214,12 +220,13 @@ class Player {
         this.x = x;
         this.y = y;
         this.lives = lives;
-        this.speed = 3;
+        this.speed = 5;
 
         this.lastShot = 0;
         this.shootCooldown = 200;
 
         this.sprite = createSprite(x, y, 64, 64);
+        this.sprite.scale = 4;
         this.sprite.addImage(shipSprite);
     }
 
@@ -244,18 +251,50 @@ class Bullet {
 }
 
 class Enemy {
-    constructor(x, y, health) {
+    constructor(x, y, health, type) {
         this.x = x;
         this.y = y;
         this.health = health;
-        this.speed = 3;
+        this.type = type;
 
         this.sprite = createSprite(x, y, 20, 20);
+        this.sprite.scale = 4;
+        switch(type) {
+            case 1:
+                this.sprite.addImage(astSprite1);
+                this.speed = 1;
+                break;
+            case 2:
+                this.sprite.addImage(astSprite2);
+                this.speed = 2;
+                break;
+            case 3:
+                this.sprite.addImage(astSprite3);
+                this.speed = 3;
+                break;
+        }
+        
     }
 
     render() {
         this.y += this.speed;
         this.sprite.position.x = this.x;
         this.sprite.position.y = this.y;
+    }
+
+    handleDeath() {
+        switch(this.type) {
+            case 1:
+                enemyObj.push(new Enemy(this.sprite.position.x - 20, 0, 1, 2));
+                enemyObj.push(new Enemy(this.sprite.position.x + 20, 0, 1, 2));
+                break;
+            case 2:
+                enemyObj.push(new Enemy(this.sprite.position.x - 20, 0, 1, 3));
+                enemyObj.push(new Enemy(this.sprite.position.x + 20, 0, 1, 3));
+                break;
+            case 3:
+                break;
+        }
+        this.sprite.remove();
     }
 }
