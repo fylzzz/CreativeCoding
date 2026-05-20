@@ -5,6 +5,7 @@ let enemyObj = [];
 let sceneList = [];
 let currentScene;
 let finishScreenReady = false;
+let startGameReady = false;
 
 let menuButton;
 let endButton;
@@ -19,6 +20,8 @@ const spawnTimer = 5000;
 let score = 0;
 let missed = 0;
 let playTime = 0;
+let loadStartTime = 0;
+let gameStartTime = 0;
 
 function preload() {
     shipSprite = loadImage('assets/ship.png');
@@ -33,7 +36,7 @@ function setup() {
     bgVideo.volume(0);  
 
     sceneList = ["menu", "load", "main", "finish"];
-    currentScene = sceneList[2];
+    currentScene = sceneList[0];
     playerObj = new Player(windowWidth/2, windowHeight/1.2, 3);
     enemyObj.push(new Enemy(windowWidth/2, 10, 1));
 }
@@ -48,17 +51,35 @@ function draw() {
 
     switch (currentScene) {
         case "menu":
+            background(10);
+            fill(255);
+            textAlign(CENTER, CENTER)
+            textSize(52);
+            text("Asteroid Defender", windowWidth/2, windowHeight/3);
+
+            if (!startGameReady) {
+            menuButton = createButton("Start Game");
+            menuButton.position(windowWidth/2, windowHeight/3 + 60);
+            menuButton.style('transform', 'translateX(-50%)');
+            menuButton.mousePressed(() => {
+                menuButton.remove();
+                currentScene = sceneList[1];
+                });
+            }
+            startGameReady = true;
             break;
         case "load":
-            let timer = 5000;
-            let startTime = millis();
-            while (millis() < startTime + timer) {
-                background(10);
-                fill(255);
-                textAlign(CENTER, CENTER);
-                text("Loading...", windowWidth/2, windowHeight/2);
+            if (!loadStartTime) loadStartTime = millis();
+            if (millis() - loadStartTime >= 5000) {
+                loadStartTime = 0;
+                gameStartTime = millis();
+                resetGame();
+                currentScene = sceneList[2];
             }
-            currentScene = sceneList[2];
+            background(10);
+            fill(255);
+            textAlign(CENTER, CENTER);
+            text("Loading...", windowWidth/2, windowHeight/2);
             break;
         case "main":
             // -------------------
@@ -74,7 +95,7 @@ function draw() {
                 lastSpawn = millis();
             }
 
-            playTime = millis();
+            playTime = millis() - gameStartTime;
 
             bulletObj = bulletObj.filter(b => {
                 if (b.y < -20) return false;
@@ -150,12 +171,25 @@ function draw() {
                 endButton.style('transform', 'translateX(-50%)');
                 endButton.mousePressed(() => {
                     endButton.remove();
+                    startGameReady = false;
                     currentScene = sceneList[0];
                 });
 
                 finishScreenReady = true;
+            }
     }
-    }
+}
+
+function resetGame() {
+    score = 0;
+    missed = 0;
+    playTime = 0;
+    lastSpawn = 0;
+    bulletObj = [];
+    enemyObj.forEach(e => e.sprite.remove());
+    enemyObj = [];
+    playerObj.x = windowWidth / 2;
+    playerObj.y = windowHeight / 1.2;
 }
 
 function spawnEnemy() {
