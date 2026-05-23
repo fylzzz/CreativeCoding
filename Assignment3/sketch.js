@@ -10,6 +10,11 @@ let startGameReady = false;
 let menuButton;
 let endButton;
 
+let laserSound;
+let asteroidSound;
+let deathSound
+let bgm;
+
 let shipSprite;
 let astSprite1;
 let astSprite2;
@@ -31,7 +36,13 @@ function preload() {
     astSprite1 = loadImage('assets/asteroid1.png');
     astSprite2 = loadImage('assets/asteroid2.png');
     astSprite3 = loadImage('assets/asteroid3.png');
+
     scoresheet = loadJSON('assets/scoresheet.json');
+
+    laserSound = loadSound('assets/laser.wav');
+    asteroidSound = loadSound('assets/asteroid.wav');
+    deathSound = loadSound('assets/ship.wav');
+    bgm = loadSound('assets/bgm.wav');
 }
 
 function setup() {
@@ -40,7 +51,9 @@ function setup() {
 
     bgVideo = createVideo('assets/backgroundvideo.mp4');
     bgVideo.hide();
-    bgVideo.volume(0);  
+    bgVideo.volume(0);
+
+    bgm.loop();
 
     sceneList = ["menu", "load", "main", "finish"];
     currentScene = sceneList[0];
@@ -80,6 +93,7 @@ function draw() {
                 loadStartTime = 0;
                 gameStartTime = millis();
                 resetGame();
+                bgm.play();
                 currentScene = sceneList[2];
             }
             background(10);
@@ -131,6 +145,8 @@ function draw() {
             });
 
             if (missed >= 3) {
+                bgm.stop();
+                deathSound.play();
                 currentScene = sceneList[3];
                 finishScreenReady = false;
             }
@@ -162,21 +178,34 @@ function draw() {
             textSize(52);
             text("Game Over", windowWidth/2, windowHeight/3);
 
+            let currentEntry = { month: month(), date: day(), score: score, time: (playTime/1000) };
+
+            // Best from saved scoresheet
+            let savedBest = Array.isArray(scoresheet)
+                ? scoresheet.reduce((best, s) => s.score > best.score ? s : best, scoresheet[0])
+                : scoresheet;
+
+            // Show whichever is higher
+            let hiScore = currentEntry.score > savedBest.score ? currentEntry : savedBest;
+
             text("Hi-Score:", windowWidth/2, windowHeight/2);
             textSize(36);
-            text("Date: " + scoresheet.date + "/" + scoresheet.month, windowWidth/2, windowHeight/2 + 50);
-            text("Score: " + scoresheet.score, windowWidth/2, windowHeight/2 + 80);
-            text("Time: " + scoresheet.time.toFixed(4), windowWidth/2, windowHeight/2 + 110);
+            text("Date: " + hiScore.date + "/" + hiScore.month, windowWidth/2, windowHeight/2 + 50);
+            text("Score: " + hiScore.score, windowWidth/2, windowHeight/2 + 80);
+            text("Time: " + hiScore.time.toFixed(4), windowWidth/2, windowHeight/2 + 110);
 
             if (!finishScreenReady) {
                 let data = { month: month(), date: day(), score: score, time: (playTime/1000) };
-                saveJSON(data, 'scoresheet.json');
 
                 endButton = createButton("Return to Menu");
                 endButton.position(windowWidth/2, windowHeight/3 + 60);
                 endButton.style('transform', 'translateX(-50%)');
                 endButton.mousePressed(() => {
                     endButton.remove();
+                    let updatedSheet = Array.isArray(scoresheet) ? scoresheet : [scoresheet];
+                    updatedSheet.push(currentEntry);
+                    scoresheet = updatedSheet;
+                    saveJSON(updatedSheet, 'scoresheet.json');
                     startGameReady = false;
                     currentScene = sceneList[0];
                 });
@@ -209,8 +238,13 @@ function handleInput(player) {
     if (keyIsDown(68)) {
         player.x += player.speed;
     }
+
+    const halfW = player.sprite.width / 2;
+    player.x = constrain(player.x, halfW, windowWidth / 1.5 - halfW);
+
     if (mouseIsPressed && mouseButton == LEFT && millis() - player.lastShot > player.shootCooldown) {
         bulletObj.push(new Bullet(player.x, player.y - player.sprite.height));
+        laserSound.play();
         player.lastShot = millis();
     }
 }
@@ -295,6 +329,7 @@ class Enemy {
             case 3:
                 break;
         }
+        asteroidSound.play();
         this.sprite.remove();
     }
 }
