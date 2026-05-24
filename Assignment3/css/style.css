@@ -1,3 +1,8 @@
+@font-face {
+    font-family: 'Press Start 2P';
+    src: url('assets/font.ttf');
+}
+
 * {
     margin: 0;
     padding: 0;
@@ -10,4 +15,13 @@ body {
     align-items: center;
     min-height: 100vh;
     background: #f0f0f0;
+}
+
+.button {
+    font-family: 'Press Start 2P', monospace;
+    background-color: whitesmoke;
+    color: black;
+    padding: 14px 22px;
+    border-radius: 12px;
+    cursor: crosshair;
 }

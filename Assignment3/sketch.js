@@ -7,6 +7,8 @@ let currentScene;
 let finishScreenReady = false;
 let startGameReady = false;
 
+let font;
+
 let menuButton;
 let endButton;
 
@@ -43,11 +45,15 @@ function preload() {
     asteroidSound = loadSound('assets/asteroid.wav');
     deathSound = loadSound('assets/ship.wav');
     bgm = loadSound('assets/bgm.wav');
+
+    font = loadFont('assets/font.ttf');
 }
 
 function setup() {
     createCanvas(windowWidth, windowHeight);
     noSmooth();
+
+    textFont(font);
 
     bgVideo = createVideo('assets/backgroundvideo.mp4');
     bgVideo.hide();
@@ -77,8 +83,10 @@ function draw() {
             text("Asteroid Defender", windowWidth/2, windowHeight/3);
 
             if (!startGameReady) {
-            menuButton = createButton("Start Game");
+            menuButton = createButton("START GAME");
+            menuButton.size(200, 100);
             menuButton.position(windowWidth/2, windowHeight/3 + 60);
+            menuButton.addClass('button');
             menuButton.style('transform', 'translateX(-50%)');
             menuButton.mousePressed(() => {
                 menuButton.remove();
@@ -199,6 +207,7 @@ function draw() {
 
                 endButton = createButton("Return to Menu");
                 endButton.position(windowWidth/2, windowHeight/3 + 60);
+                endButton.addClass('button');
                 endButton.style('transform', 'translateX(-50%)');
                 endButton.mousePressed(() => {
                     endButton.remove();
