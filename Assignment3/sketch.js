@@ -18,6 +18,7 @@ let deathSound
 let bgm;
 
 let shipSprite;
+let laserSprite;
 let astSprite1;
 let astSprite2;
 let astSprite3;
@@ -35,6 +36,7 @@ let gameStartTime = 0;
 
 function preload() {
     shipSprite = loadImage('assets/ship.png');
+    laserSprite = loadImage('assets/laser.png');
     astSprite1 = loadImage('assets/asteroid1.png');
     astSprite2 = loadImage('assets/asteroid2.png');
     astSprite3 = loadImage('assets/asteroid3.png');
@@ -126,12 +128,16 @@ function draw() {
             playTime = millis() - gameStartTime;
 
             bulletObj = bulletObj.filter(b => {
-                if (b.y < -20) return false;
+                if (b.y < -20) { 
+                    b.sprite.remove();    
+                    return false;
+                }
 
                 for (let i = enemyObj.length - 1; i >= 0; i--) {
                     let e = enemyObj[i];
                     if (dist(b.x, b.y, e.x, e.y) < 40) {
                         e.health--;
+                        b.sprite.remove();
                         if (e.health <= 0) {
                             enemyObj.splice(i, 1);
                             e.handleDeath();
@@ -147,6 +153,14 @@ function draw() {
                 if (e.y > windowHeight + 20) {
                     e.sprite.remove();
                     missed++;
+                    return false;
+                }
+                if (dist(e.x, e.y, playerObj.x, playerObj.y) < 60) {
+                    e.sprite.remove();
+                    bgm.stop();
+                    deathSound.play();
+                    currentScene = sceneList[3];
+                    finishScreenReady = false;
                     return false;
                 }
                 return true;
@@ -252,7 +266,7 @@ function handleInput(player) {
     player.x = constrain(player.x, halfW, windowWidth / 1.5 - halfW);
 
     if (mouseIsPressed && mouseButton == LEFT && millis() - player.lastShot > player.shootCooldown) {
-        bulletObj.push(new Bullet(player.x, player.y - player.sprite.height));
+        bulletObj.push(new Bullet(player.x, player.y - player.sprite.height/2));
         laserSound.play();
         player.lastShot = millis();
     }
@@ -284,12 +298,16 @@ class Bullet {
         this.x = x;
         this.y = y;
         this.speed = 5;
+
+        this.sprite = createSprite(x, y, 64, 64);
+        this.sprite.scale = 4;
+        this.sprite.addImage(laserSprite);
     }
 
     render() {
-        fill(255, 0, 0);
-        ellipse(this.x, this.y, 10, 20);
         this.y -= this.speed;
+        this.sprite.position.x = this.x;
+        this.sprite.position.y = this.y;
     }
 }
 
@@ -328,12 +346,12 @@ class Enemy {
     handleDeath() {
         switch(this.type) {
             case 1:
-                enemyObj.push(new Enemy(this.sprite.position.x - 20, 0, 1, 2));
-                enemyObj.push(new Enemy(this.sprite.position.x + 20, 0, 1, 2));
+                enemyObj.push(new Enemy(this.sprite.position.x - 40, 0, 1, 2));
+                enemyObj.push(new Enemy(this.sprite.position.x + 40, 0, 1, 2));
                 break;
             case 2:
-                enemyObj.push(new Enemy(this.sprite.position.x - 20, 0, 1, 3));
-                enemyObj.push(new Enemy(this.sprite.position.x + 20, 0, 1, 3));
+                enemyObj.push(new Enemy(this.sprite.position.x - 40, 0, 1, 3));
+                enemyObj.push(new Enemy(this.sprite.position.x + 40, 0, 1, 3));
                 break;
             case 3:
                 break;
